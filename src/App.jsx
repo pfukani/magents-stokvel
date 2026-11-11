@@ -23,6 +23,16 @@ const formatRand = (n) => {
 };
 const currentCalendarYear = new Date().getFullYear();
 
+// A month is "due" once it has ended: all months of past years, and months
+// before the current month in the current year. Blank due months count as missed.
+const isMonthDue = (year, idx) => {
+  const now = new Date();
+  const y = now.getFullYear();
+  if (year < y) return true;
+  if (year > y) return false;
+  return idx < now.getMonth();
+};
+
 export default function StokvelDashboard({ role, myEmail, onSignOut }) {
   const isAdmin = role === "admin";
 
@@ -208,10 +218,15 @@ export default function StokvelDashboard({ role, myEmail, onSignOut }) {
     const rows = settings.members.map((mem) => {
       const monthly = yearData.contributions[mem.id] || monthsInit(null);
       const rawContribution = MONTHS.reduce((s, m) => s + (monthly[m] || 0), 0);
-      const shortfallMonths = MONTHS.filter((m) => monthly[m] !== null && monthly[m] < rules.minContribution).length;
+      const missed = {};
+      MONTHS.forEach((m, i) => {
+        const v = monthly[m];
+        missed[m] = v === null ? isMonthDue(currentYear, i) : v < rules.minContribution;
+      });
+      const shortfallMonths = MONTHS.filter((m) => missed[m]).length;
       const penaltyTotal = shortfallMonths * rules.penaltyAmount;
       const netContribution = Math.max(0, rawContribution - penaltyTotal);
-      return { ...mem, monthly, rawContribution, shortfallMonths, penaltyTotal, netContribution };
+      return { ...mem, monthly, missed, rawContribution, shortfallMonths, penaltyTotal, netContribution };
     });
 
     const totalNetContributionAll = rows.reduce((s, r) => s + r.netContribution, 0);
@@ -235,7 +250,7 @@ export default function StokvelDashboard({ role, myEmail, onSignOut }) {
 
     const totalPool = totalRawContributionAll + totalInterest;
     return { rows: withShare, totalRawContributionAll, totalNetContributionAll, totalInterest, totalPenaltiesAll, combinedBonus, totalPool, rules, penaltySplit };
-  }, [settings, yearData]);
+  }, [settings, yearData, currentYear]);
 
   if (!ready || !totals) {
     return (
@@ -291,7 +306,7 @@ export default function StokvelDashboard({ role, myEmail, onSignOut }) {
         <button className={tab === "overview" ? "active" : ""} onClick={() => setTab("overview")}>Overview</button>
         <button className={tab === "ledger" ? "active" : ""} onClick={() => setTab("ledger")}>Ledger</button>
         <button className={tab === "members" ? "active" : ""} onClick={() => setTab("members")}>Members</button>
-        <button className={tab === "reports" ? "active" : ""} onClick={() => setTab("reports")}>Reports</button>
+        {isAdmin && <button className={tab === "reports" ? "active" : ""} onClick={() => setTab("reports")}>Reports</button>}
         {isAdmin && <button className={tab === "settings" ? "active" : ""} onClick={() => setTab("settings")}>Settings</button>}
       </div>
 
@@ -320,7 +335,7 @@ export default function StokvelDashboard({ role, myEmail, onSignOut }) {
             removeMember={removeMember}
           />
         )}
-        {tab === "reports" && <Reports totals={totals} year={currentYear} />}
+        {tab === "reports" && isAdmin && <Reports totals={totals} year={currentYear} />}
         {tab === "settings" && isAdmin && (
           <SettingsTab
             yearData={yearData}
@@ -435,8 +450,8 @@ function Ledger({ totals, isAdmin, editingCell, setEditingCell, draftVal, setDra
   return (
     <div className="sv-ledger-wrap">
       <div className="sv-legend">
-        <span><i className="sv-dot sv-dot-zero" /> Below {formatRand(min)} — counts as missed, R{penalty} penalty</span>
-        <span><i className="sv-dot sv-dot-blank" /> — not due yet</span>
+        <span><i className="sv-dot sv-dot-zero" /> Below {formatRand(min)}, or left blank in a past month — missed, R{penalty} penalty</span>
+        <span><i className="sv-dot sv-dot-blank" /> — this month or later, not due yet</span>
         {isAdmin && <span className="sv-legend-hint"><Pencil size={12} /> Click a cell to edit</span>}
       </div>
       <div className="sv-table-scroll">
@@ -470,14 +485,14 @@ function Ledger({ totals, isAdmin, editingCell, setEditingCell, draftVal, setDra
                       </td>
                     );
                   }
-                  const shortfall = val !== null && val < min;
+                  const shortfall = r.missed[m];
                   return (
                     <td
                       key={m}
                       className={"sv-cell" + (shortfall ? " sv-cell-zero" : val === null ? " sv-cell-blank" : "") + (isAdmin ? " sv-cell-clickable" : "")}
                       onClick={() => { if (!isAdmin) return; setEditingCell({ memberId: r.id, month: m }); setDraftVal(val === null ? "" : String(val)); }}
                     >
-                      {val === null ? "—" : formatRand(val)}
+                      {val === null ? (shortfall ? "Missed" : "—") : formatRand(val)}
                     </td>
                   );
                 })}
@@ -854,7 +869,7 @@ function downloadCsv(totals, year) {
   lines.push(["Member", ...MONTHS, "Total contributed", "Short months", "Penalty deducted", "Net contribution", "Share of pool %", "Interest share", "Penalty share", "Total payout"]);
   totals.rows.forEach((r) => lines.push([
     r.name,
-    ...MONTHS.map((m) => (r.monthly[m] === null ? "" : r2(r.monthly[m]))),
+    ...MONTHS.map((m) => (r.monthly[m] === null ? (r.missed[m] ? "Missed" : "") : r2(r.monthly[m]))),
     r2(r.rawContribution), r.shortfallMonths, r2(r.penaltyTotal), r2(r.netContribution),
     (r.pct * 100).toFixed(2), r2(r.interestShare), r2(r.penaltyShare), r2(r.totalShare),
   ]));
