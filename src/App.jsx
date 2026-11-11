@@ -19,7 +19,7 @@ const monthsInit = (val = null) => MONTHS.reduce((acc, m) => { acc[m] = val; ret
 const uid = () => `m_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
 const formatRand = (n) => {
   if (n === null || n === undefined || Number.isNaN(n)) return "—";
-  return "R" + Number(n).toLocaleString("en-ZA", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return "R" + Number(n).toLocaleString("en-ZA", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 };
 const currentCalendarYear = new Date().getFullYear();
 
