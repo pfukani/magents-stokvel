@@ -4,7 +4,6 @@ import {
   PieChart, Pie, Cell, CartesianGrid,
 } from "recharts";
 import {
-<<<<<<< HEAD
   Users, Plus, Trash2, LogOut, Check, X,
   ChevronDown, Wallet, PiggyBank, AlertTriangle, Pencil,
   CalendarPlus, ShieldCheck, Info, UserPlus, Shield, FileDown, Printer,
@@ -15,18 +14,6 @@ import { listAllowedUsers, addAllowedUser, updateAllowedUserRole, removeAllowedU
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const PALETTE = ["#C79A2B","#3E7A5C","#A6512C","#5B7B9A","#8B6F3E","#6B8E4E","#B08968","#4A6B6B","#9C6B9E","#7A8B4E","#C4783B","#5C7A8A"];
 const DEFAULT_RULES = { minContribution: 500, penaltyAmount: 50, penaltySplit: "equal" };
-=======
-  Users, Plus, Trash2, LogIn, LogOut, Lock, Check, X,
-  ChevronDown, Wallet, PiggyBank, AlertTriangle, Pencil,
-  CalendarPlus, ShieldCheck, Info,
-} from "lucide-react";
-import { storageGet, storageSet } from "./storage.js";
-
-const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-const PALETTE = ["#C79A2B","#3E7A5C","#A6512C","#5B7B9A","#8B6F3E","#6B8E4E","#B08968","#4A6B6B","#9C6B9E","#7A8B4E","#C4783B","#5C7A8A"];
-const DEFAULT_PIN = "1234";
-const DEFAULT_RULES = { minContribution: 500, penaltyAmount: 50 };
->>>>>>> 6e2a3a52b00bf86ec885ba360374648add38dfb7
 
 const monthsInit = (val = null) => MONTHS.reduce((acc, m) => { acc[m] = val; return acc; }, {});
 const uid = () => `m_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
@@ -35,17 +22,6 @@ const formatRand = (n) => {
   return "R" + Number(n).toLocaleString("en-ZA", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
 const currentCalendarYear = new Date().getFullYear();
-
-<<<<<<< HEAD
-// A month is "due" once it has ended: all months of past years, and months
-// before the current month in the current year. Blank due months count as missed.
-const isMonthDue = (year, idx) => {
-  const now = new Date();
-  const y = now.getFullYear();
-  if (year < y) return true;
-  if (year > y) return false;
-  return idx < now.getMonth();
-};
 
 export default function StokvelDashboard({ role, myEmail, onSignOut }) {
   const isAdmin = role === "admin";
@@ -57,21 +33,6 @@ export default function StokvelDashboard({ role, myEmail, onSignOut }) {
   const [yearData, setYearData] = useState(null); // { contributions, interest, rules }
   const [tab, setTab] = useState("overview");
 
-=======
-export default function StokvelDashboard() {
-  const [ready, setReady] = useState(false);
-  const [error, setError] = useState("");
-  const [settings, setSettings] = useState(null); // { adminPin, years, members }
-  const [currentYear, setCurrentYear] = useState(null);
-  const [yearData, setYearData] = useState(null); // { contributions, interest, rules }
-  const [role, setRole] = useState("member");
-  const [tab, setTab] = useState("overview");
-
-  const [showLogin, setShowLogin] = useState(false);
-  const [pinDraft, setPinDraft] = useState("");
-  const [loginError, setLoginError] = useState("");
-
->>>>>>> 6e2a3a52b00bf86ec885ba360374648add38dfb7
   const [showAddMember, setShowAddMember] = useState(false);
   const [newMemberName, setNewMemberName] = useState("");
 
@@ -81,18 +42,11 @@ export default function StokvelDashboard() {
   const [editingCell, setEditingCell] = useState(null); // {memberId, month}
   const [draftVal, setDraftVal] = useState("");
 
-<<<<<<< HEAD
   const [accessList, setAccessList] = useState([]);
   const [accessLoaded, setAccessLoaded] = useState(false);
   const [newAccessEmail, setNewAccessEmail] = useState("");
   const [newAccessRole, setNewAccessRole] = useState("member");
   const [accessError, setAccessError] = useState("");
-=======
-  const [showPinChange, setShowPinChange] = useState(false);
-  const [pinOld, setPinOld] = useState("");
-  const [pinNew, setPinNew] = useState("");
-  const [pinChangeMsg, setPinChangeMsg] = useState("");
->>>>>>> 6e2a3a52b00bf86ec885ba360374648add38dfb7
 
   // ---------- storage helpers ----------
   const loadSettings = useCallback(async () => {
@@ -100,11 +54,7 @@ export default function StokvelDashboard() {
       const val = await storageGet("stokvel:settings");
       if (val) return val;
     } catch (e) { setError("Could not reach the database. Check your Supabase connection settings."); }
-<<<<<<< HEAD
     const def = { years: [currentCalendarYear], members: [] };
-=======
-    const def = { adminPin: DEFAULT_PIN, years: [currentCalendarYear], members: [] };
->>>>>>> 6e2a3a52b00bf86ec885ba360374648add38dfb7
     try { await storageSet("stokvel:settings", def); } catch (e) { setError("Could not save initial settings. Check your Supabase connection."); }
     return def;
   }, []);
@@ -144,7 +94,6 @@ export default function StokvelDashboard() {
     })();
   }, [loadSettings, loadYear]);
 
-<<<<<<< HEAD
   useEffect(() => {
     if (!isAdmin || tab !== "settings") return;
     setAccessLoaded(false);
@@ -153,8 +102,6 @@ export default function StokvelDashboard() {
       .catch(() => { setAccessError("Could not load the access list."); setAccessLoaded(true); });
   }, [isAdmin, tab]);
 
-=======
->>>>>>> 6e2a3a52b00bf86ec885ba360374648add38dfb7
   const switchYear = async (year) => {
     setCurrentYear(year);
     const yd = await loadYear(year, settings.members.map((m) => m.id));
@@ -173,15 +120,6 @@ export default function StokvelDashboard() {
   };
 
   // ---------- actions ----------
-<<<<<<< HEAD
-=======
-  const handleLogin = () => {
-    if (pinDraft === settings.adminPin) {
-      setRole("admin"); setShowLogin(false); setPinDraft(""); setLoginError("");
-    } else { setLoginError("Incorrect PIN."); }
-  };
-
->>>>>>> 6e2a3a52b00bf86ec885ba360374648add38dfb7
   const addMember = async () => {
     const name = newMemberName.trim();
     if (!name) return;
@@ -223,12 +161,8 @@ export default function StokvelDashboard() {
 
   const updateRule = async (field, value) => {
     const num = parseFloat(value);
-<<<<<<< HEAD
     const parsed = field === "penaltySplit" ? value : (Number.isNaN(num) ? 0 : num);
     const rules = { ...(yearData.rules || DEFAULT_RULES), [field]: parsed };
-=======
-    const rules = { ...(yearData.rules || DEFAULT_RULES), [field]: Number.isNaN(num) ? 0 : num };
->>>>>>> 6e2a3a52b00bf86ec885ba360374648add38dfb7
     await saveYearData({ ...yearData, rules });
   };
 
@@ -241,7 +175,6 @@ export default function StokvelDashboard() {
     await switchYear(y);
   };
 
-<<<<<<< HEAD
   // ---------- access list actions ----------
   const refreshAccessList = async () => {
     try { setAccessList(await listAllowedUsers()); } catch (e) { setAccessError("Could not refresh the access list."); }
@@ -267,25 +200,6 @@ export default function StokvelDashboard() {
   };
 
   // ---------- derived data ----------
-=======
-  const changePin = async () => {
-    if (pinOld !== settings.adminPin) { setPinChangeMsg("Current PIN is incorrect."); return; }
-    if (!/^\d{4,8}$/.test(pinNew)) { setPinChangeMsg("New PIN must be 4–8 digits."); return; }
-    await saveSettings({ ...settings, adminPin: pinNew });
-    setPinChangeMsg("PIN updated."); setPinOld(""); setPinNew("");
-    setTimeout(() => { setShowPinChange(false); setPinChangeMsg(""); }, 1200);
-  };
-
-  // ---------- derived data ----------
-  // Model: each member's own share is based on their contribution NET of any
-  // penalty they owe (penalty is always deducted). All penalties collected
-  // across the club, plus the bank interest, are pooled and redistributed to
-  // everyone by their net-contribution share — so skipping a month costs you
-  // twice: it shrinks your own base, and it shrinks your slice of the pool
-  // you'd have gotten from the redistribution too. Note the total pool of
-  // money the club actually has is unaffected by this — penalties only move
-  // money between members, they don't create or destroy it.
->>>>>>> 6e2a3a52b00bf86ec885ba360374648add38dfb7
   const totals = useMemo(() => {
     if (!settings || !yearData) return null;
     const rules = yearData.rules || DEFAULT_RULES;
@@ -294,28 +208,15 @@ export default function StokvelDashboard() {
     const rows = settings.members.map((mem) => {
       const monthly = yearData.contributions[mem.id] || monthsInit(null);
       const rawContribution = MONTHS.reduce((s, m) => s + (monthly[m] || 0), 0);
-<<<<<<< HEAD
-      const missed = {};
-      MONTHS.forEach((m, i) => {
-        const v = monthly[m];
-        missed[m] = v === null ? isMonthDue(currentYear, i) : v < rules.minContribution;
-      });
-      const shortfallMonths = MONTHS.filter((m) => missed[m]).length;
-      const penaltyTotal = shortfallMonths * rules.penaltyAmount;
-      const netContribution = Math.max(0, rawContribution - penaltyTotal);
-      return { ...mem, monthly, missed, rawContribution, shortfallMonths, penaltyTotal, netContribution };
-=======
       const shortfallMonths = MONTHS.filter((m) => monthly[m] !== null && monthly[m] < rules.minContribution).length;
       const penaltyTotal = shortfallMonths * rules.penaltyAmount;
       const netContribution = Math.max(0, rawContribution - penaltyTotal);
       return { ...mem, monthly, rawContribution, shortfallMonths, penaltyTotal, netContribution };
->>>>>>> 6e2a3a52b00bf86ec885ba360374648add38dfb7
     });
 
     const totalNetContributionAll = rows.reduce((s, r) => s + r.netContribution, 0);
     const totalRawContributionAll = rows.reduce((s, r) => s + r.rawContribution, 0);
     const totalPenaltiesAll = rows.reduce((s, r) => s + r.penaltyTotal, 0);
-<<<<<<< HEAD
     const penaltySplit = rules.penaltySplit || "equal";
     const combinedBonus = totalInterest + totalPenaltiesAll;
     const memberCount = rows.length;
@@ -334,20 +235,7 @@ export default function StokvelDashboard() {
 
     const totalPool = totalRawContributionAll + totalInterest;
     return { rows: withShare, totalRawContributionAll, totalNetContributionAll, totalInterest, totalPenaltiesAll, combinedBonus, totalPool, rules, penaltySplit };
-  }, [settings, yearData, currentYear]);
-=======
-    const combinedBonus = totalInterest + totalPenaltiesAll; // interest + everyone's penalties, pooled
-
-    const withShare = rows.map((r) => {
-      const pct = totalNetContributionAll > 0 ? r.netContribution / totalNetContributionAll : 0;
-      const bonusShare = pct * combinedBonus;
-      return { ...r, pct, bonusShare, totalShare: r.netContribution + bonusShare };
-    });
-
-    const totalPool = totalRawContributionAll + totalInterest; // penalties net out club-wide, only interest adds new money
-    return { rows: withShare, totalRawContributionAll, totalNetContributionAll, totalInterest, totalPenaltiesAll, combinedBonus, totalPool, rules };
   }, [settings, yearData]);
->>>>>>> 6e2a3a52b00bf86ec885ba360374648add38dfb7
 
   if (!ready || !totals) {
     return (
@@ -358,20 +246,10 @@ export default function StokvelDashboard() {
     );
   }
 
-<<<<<<< HEAD
-=======
-  const isAdmin = role === "admin";
-  const firstLoginBanner = isAdmin && settings.adminPin === DEFAULT_PIN;
-
->>>>>>> 6e2a3a52b00bf86ec885ba360374648add38dfb7
   return (
     <div className="sv-app">
       <style>{CSS}</style>
 
-<<<<<<< HEAD
-=======
-      {/* Header / passbook cover */}
->>>>>>> 6e2a3a52b00bf86ec885ba360374648add38dfb7
       <div className="sv-header">
         <div className="sv-header-top">
           <div>
@@ -399,49 +277,21 @@ export default function StokvelDashboard() {
           </div>
 
           <div className="sv-role-area">
-<<<<<<< HEAD
             <span className={"sv-role-badge" + (isAdmin ? " sv-role-admin" : "")}>
               {isAdmin && <ShieldCheck size={13} />} {myEmail}
             </span>
             <button className="sv-text-btn" onClick={onSignOut}><LogOut size={13} /> Sign out</button>
-=======
-            {isAdmin ? (
-              <>
-                <span className="sv-role-badge sv-role-admin"><ShieldCheck size={13} /> Admin</span>
-                <button className="sv-text-btn" onClick={() => setRole("member")}><LogOut size={13} /> Sign out</button>
-              </>
-            ) : (
-              <>
-                <span className="sv-role-badge">Viewing only</span>
-                <button className="sv-text-btn" onClick={() => setShowLogin(true)}><LogIn size={13} /> Admin sign in</button>
-              </>
-            )}
->>>>>>> 6e2a3a52b00bf86ec885ba360374648add38dfb7
           </div>
         </div>
       </div>
 
-<<<<<<< HEAD
       {error && <div className="sv-banner sv-banner-error"><AlertTriangle size={14} /> {error}</div>}
 
-=======
-      {firstLoginBanner && (
-        <div className="sv-banner">
-          <Info size={14} /> You're using the default PIN ({DEFAULT_PIN}). Change it under Settings so only your admins can edit records.
-        </div>
-      )}
-      {error && <div className="sv-banner sv-banner-error"><AlertTriangle size={14} /> {error}</div>}
-
-      {/* Tabs */}
->>>>>>> 6e2a3a52b00bf86ec885ba360374648add38dfb7
       <div className="sv-tabs">
         <button className={tab === "overview" ? "active" : ""} onClick={() => setTab("overview")}>Overview</button>
         <button className={tab === "ledger" ? "active" : ""} onClick={() => setTab("ledger")}>Ledger</button>
         <button className={tab === "members" ? "active" : ""} onClick={() => setTab("members")}>Members</button>
-<<<<<<< HEAD
         <button className={tab === "reports" ? "active" : ""} onClick={() => setTab("reports")}>Reports</button>
-=======
->>>>>>> 6e2a3a52b00bf86ec885ba360374648add38dfb7
         {isAdmin && <button className={tab === "settings" ? "active" : ""} onClick={() => setTab("settings")}>Settings</button>}
       </div>
 
@@ -470,17 +320,13 @@ export default function StokvelDashboard() {
             removeMember={removeMember}
           />
         )}
-<<<<<<< HEAD
         {tab === "reports" && <Reports totals={totals} year={currentYear} />}
-=======
->>>>>>> 6e2a3a52b00bf86ec885ba360374648add38dfb7
         {tab === "settings" && isAdmin && (
           <SettingsTab
             yearData={yearData}
             updateInterest={updateInterest}
             updateRule={updateRule}
             totals={totals}
-<<<<<<< HEAD
             accessList={accessList}
             accessLoaded={accessLoaded}
             accessError={accessError}
@@ -492,34 +338,10 @@ export default function StokvelDashboard() {
             handleToggleRole={handleToggleRole}
             handleRemoveAccess={handleRemoveAccess}
             myEmail={myEmail}
-=======
-            onChangePin={() => setShowPinChange(true)}
->>>>>>> 6e2a3a52b00bf86ec885ba360374648add38dfb7
           />
         )}
       </div>
 
-<<<<<<< HEAD
-=======
-      {/* Admin login modal */}
-      {showLogin && (
-        <Modal onClose={() => { setShowLogin(false); setLoginError(""); setPinDraft(""); }}>
-          <h3><Lock size={16} /> Admin sign in</h3>
-          <input
-            type="password" autoFocus inputMode="numeric" placeholder="Enter PIN"
-            value={pinDraft} onChange={(e) => setPinDraft(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-          />
-          {loginError && <div className="sv-form-error">{loginError}</div>}
-          <div className="sv-modal-actions">
-            <button className="sv-btn sv-btn-ghost" onClick={() => { setShowLogin(false); setLoginError(""); setPinDraft(""); }}>Cancel</button>
-            <button className="sv-btn sv-btn-primary" onClick={handleLogin}>Sign in</button>
-          </div>
-        </Modal>
-      )}
-
-      {/* Add year modal */}
->>>>>>> 6e2a3a52b00bf86ec885ba360374648add38dfb7
       {showAddYear && (
         <Modal onClose={() => setShowAddYear(false)}>
           <h3><CalendarPlus size={16} /> Add a year</h3>
@@ -534,23 +356,6 @@ export default function StokvelDashboard() {
           </div>
         </Modal>
       )}
-<<<<<<< HEAD
-=======
-
-      {/* Change PIN modal */}
-      {showPinChange && (
-        <Modal onClose={() => { setShowPinChange(false); setPinChangeMsg(""); setPinOld(""); setPinNew(""); }}>
-          <h3><Lock size={16} /> Change admin PIN</h3>
-          <input type="password" placeholder="Current PIN" value={pinOld} onChange={(e) => setPinOld(e.target.value)} />
-          <input type="password" placeholder="New PIN (4–8 digits)" value={pinNew} onChange={(e) => setPinNew(e.target.value)} style={{ marginTop: 8 }} />
-          {pinChangeMsg && <div className={pinChangeMsg === "PIN updated." ? "sv-form-ok" : "sv-form-error"}>{pinChangeMsg}</div>}
-          <div className="sv-modal-actions">
-            <button className="sv-btn sv-btn-ghost" onClick={() => setShowPinChange(false)}>Cancel</button>
-            <button className="sv-btn sv-btn-primary" onClick={changePin}>Update PIN</button>
-          </div>
-        </Modal>
-      )}
->>>>>>> 6e2a3a52b00bf86ec885ba360374648add38dfb7
     </div>
   );
 }
@@ -602,13 +407,9 @@ function Overview({ totals }) {
         </div>
       </div>
 
-<<<<<<< HEAD
       <div className="sv-note"><Info size={13} /> {totals.penaltySplit === "equal"
         ? <>Payout happens in December: each member's own penalty is deducted from their contribution first. The bank interest ({formatRand(totals.totalInterest)}) is split by contribution share, and all penalties collected ({formatRand(totals.totalPenaltiesAll)}) are split equally between every member.</>
         : <>Payout happens in December: each member's own penalty is deducted from their contribution first. Then all penalties collected, plus the bank interest ({formatRand(totals.combinedBonus)} combined), are pooled and redistributed to everyone by their (post-penalty) contribution share.</>}</div>
-=======
-      <div className="sv-note"><Info size={13} /> Payout happens in December: each member's own penalty is deducted from their contribution first. Then all penalties collected, plus the bank interest ({formatRand(totals.combinedBonus)} combined), are pooled and redistributed to everyone by their (post-penalty) contribution share.</div>
->>>>>>> 6e2a3a52b00bf86ec885ba360374648add38dfb7
     </div>
   );
 }
@@ -634,13 +435,8 @@ function Ledger({ totals, isAdmin, editingCell, setEditingCell, draftVal, setDra
   return (
     <div className="sv-ledger-wrap">
       <div className="sv-legend">
-<<<<<<< HEAD
-        <span><i className="sv-dot sv-dot-zero" /> Below {formatRand(min)}, or left blank in a past month — missed, R{penalty} penalty</span>
-        <span><i className="sv-dot sv-dot-blank" /> — this month or later, not due yet</span>
-=======
         <span><i className="sv-dot sv-dot-zero" /> Below {formatRand(min)} — counts as missed, R{penalty} penalty</span>
         <span><i className="sv-dot sv-dot-blank" /> — not due yet</span>
->>>>>>> 6e2a3a52b00bf86ec885ba360374648add38dfb7
         {isAdmin && <span className="sv-legend-hint"><Pencil size={12} /> Click a cell to edit</span>}
       </div>
       <div className="sv-table-scroll">
@@ -674,22 +470,14 @@ function Ledger({ totals, isAdmin, editingCell, setEditingCell, draftVal, setDra
                       </td>
                     );
                   }
-<<<<<<< HEAD
-                  const shortfall = r.missed[m];
-=======
                   const shortfall = val !== null && val < min;
->>>>>>> 6e2a3a52b00bf86ec885ba360374648add38dfb7
                   return (
                     <td
                       key={m}
                       className={"sv-cell" + (shortfall ? " sv-cell-zero" : val === null ? " sv-cell-blank" : "") + (isAdmin ? " sv-cell-clickable" : "")}
                       onClick={() => { if (!isAdmin) return; setEditingCell({ memberId: r.id, month: m }); setDraftVal(val === null ? "" : String(val)); }}
                     >
-<<<<<<< HEAD
-                      {val === null ? (shortfall ? "Missed" : "—") : formatRand(val)}
-=======
                       {val === null ? "—" : formatRand(val)}
->>>>>>> 6e2a3a52b00bf86ec885ba360374648add38dfb7
                     </td>
                   );
                 })}
@@ -771,26 +559,18 @@ function Members({ totals, isAdmin, showAddMember, setShowAddMember, newMemberNa
   );
 }
 
-<<<<<<< HEAD
 function SettingsTab({
   yearData, updateInterest, updateRule, totals,
   accessList, accessLoaded, accessError,
   newAccessEmail, setNewAccessEmail, newAccessRole, setNewAccessRole,
   handleAddAccess, handleToggleRole, handleRemoveAccess, myEmail,
 }) {
-=======
-function SettingsTab({ yearData, updateInterest, updateRule, totals, onChangePin }) {
->>>>>>> 6e2a3a52b00bf86ec885ba360374648add38dfb7
   const rules = yearData.rules || DEFAULT_RULES;
   return (
     <div className="sv-settings">
       <div className="sv-settings-block">
         <div className="sv-settings-block-title">Contribution rules</div>
-<<<<<<< HEAD
         <div className="sv-settings-hint">If a member's monthly contribution falls below the minimum, a penalty is deducted automatically from their own total. Choose below how the penalties collected are shared out at payout.</div>
-=======
-        <div className="sv-settings-hint">If a member's monthly contribution falls below the minimum, a penalty is deducted automatically from their own total. Every penalty deducted this way is pooled with the bank interest and redistributed to all members by contribution share.</div>
->>>>>>> 6e2a3a52b00bf86ec885ba360374648add38dfb7
         <div className="sv-rule-row">
           <label>
             <span>Minimum monthly contribution</span>
@@ -801,7 +581,6 @@ function SettingsTab({ yearData, updateInterest, updateRule, totals, onChangePin
             <input type="number" step="1" value={rules.penaltyAmount} onChange={(e) => updateRule("penaltyAmount", e.target.value)} />
           </label>
         </div>
-<<<<<<< HEAD
         <label className="sv-split-row">
           <span>How penalties are shared at payout</span>
           <select value={rules.penaltySplit || "equal"} onChange={(e) => updateRule("penaltySplit", e.target.value)}>
@@ -811,10 +590,6 @@ function SettingsTab({ yearData, updateInterest, updateRule, totals, onChangePin
         </label>
         {totals.totalPenaltiesAll > 0 && (
           <div className="sv-settings-total">Total penalties this year: <b>{formatRand(totals.totalPenaltiesAll)}</b></div>
-=======
-        {totals.totalPenaltiesAll > 0 && (
-          <div className="sv-settings-total">Total penalties this year: <b>{formatRand(totals.totalPenaltiesAll)}</b> (pooled with interest)</div>
->>>>>>> 6e2a3a52b00bf86ec885ba360374648add38dfb7
         )}
       </div>
 
@@ -834,7 +609,6 @@ function SettingsTab({ yearData, updateInterest, updateRule, totals, onChangePin
       </div>
 
       <div className="sv-settings-block">
-<<<<<<< HEAD
         <div className="sv-settings-block-title"><Shield size={15} style={{ verticalAlign: "-2px", marginRight: 5 }} />Manage access</div>
         <div className="sv-settings-hint">Only emails on this list can sign in and view the dashboard. Add each member's email so they can check their own numbers — admins can also edit.</div>
 
@@ -872,11 +646,6 @@ function SettingsTab({ yearData, updateInterest, updateRule, totals, onChangePin
             ))}
           </div>
         )}
-=======
-        <div className="sv-settings-block-title">Admin access</div>
-        <div className="sv-settings-hint">This PIN is a light gate to stop casual edits — it's stored with the club's data, not a full login system.</div>
-        <button className="sv-btn sv-btn-ghost" onClick={onChangePin}><Lock size={14} /> Change admin PIN</button>
->>>>>>> 6e2a3a52b00bf86ec885ba360374648add38dfb7
       </div>
     </div>
   );
@@ -1017,28 +786,20 @@ const CSS = `
 .sv-member-card-flag { display:flex; align-items:center; gap:5px; font-size: 11px; color: var(--rust); margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--line); }
 
 .sv-settings-block { background:#fff; border: 1px solid var(--line); border-radius: 10px; padding: 16px; margin-bottom: 14px; }
-<<<<<<< HEAD
 .sv-settings-block-title { font-family: var(--font-display); font-weight: 600; font-size: 15px; margin-bottom: 3px; display:flex; align-items:center; }
-=======
-.sv-settings-block-title { font-family: var(--font-display); font-weight: 600; font-size: 15px; margin-bottom: 3px; }
->>>>>>> 6e2a3a52b00bf86ec885ba360374648add38dfb7
 .sv-settings-hint { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
 .sv-rule-row { display:flex; gap: 14px; flex-wrap: wrap; }
 .sv-rule-row label { display:flex; flex-direction:column; gap: 4px; font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); text-transform: uppercase; flex: 1; min-width: 160px; }
 .sv-rule-row input { font-family: var(--font-mono); padding: 7px 8px; border: 1px solid var(--line); border-radius: 6px; font-size: 13px; }
-<<<<<<< HEAD
 .sv-split-row { display:flex; flex-direction:column; gap: 4px; margin-top: 14px; font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); text-transform: uppercase; }
 .sv-split-row select { font-family: var(--font-body); font-size: 13px; text-transform: none; padding: 8px; border: 1px solid var(--line); border-radius: 7px; background: #fff; color: var(--text-dark); }
 .sv-report-actions { display:flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
-=======
->>>>>>> 6e2a3a52b00bf86ec885ba360374648add38dfb7
 .sv-mini-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 8px; }
 .sv-mini-grid label { display:flex; flex-direction:column; gap: 3px; font-size: 10.5px; color: var(--text-muted); font-family: var(--font-mono); text-transform: uppercase; }
 .sv-mini-grid input { font-family: var(--font-mono); padding: 5px 6px; border: 1px solid var(--line); border-radius: 5px; font-size: 12.5px; }
 .sv-settings-total { margin-top: 12px; font-size: 13px; }
 .sv-settings-total b { font-family: var(--font-mono); }
 
-<<<<<<< HEAD
 .sv-add-access-form { display:flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
 .sv-add-access-form input { flex: 2; min-width: 180px; }
 .sv-add-access-form select { flex: 1; min-width: 140px; font-family: var(--font-body); font-size: 13px; padding: 8px 8px; border: 1px solid var(--line); border-radius: 7px; background: #fff; }
@@ -1049,8 +810,6 @@ const CSS = `
 .sv-role-pill { font-family: var(--font-mono); font-size: 10.5px; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; background: var(--paper-2); color: var(--text-muted); }
 .sv-role-pill-admin { background: rgba(199,154,43,0.18); color: var(--gold-dark); }
 
-=======
->>>>>>> 6e2a3a52b00bf86ec885ba360374648add38dfb7
 .sv-empty { display:flex; flex-direction:column; align-items:center; justify-content:center; gap: 10px; padding: 48px 20px; color: var(--text-muted); text-align:center; }
 .sv-empty p { max-width: 340px; font-size: 13.5px; margin: 0; }
 
@@ -1059,14 +818,9 @@ const CSS = `
 .sv-btn-primary:hover { background: var(--ink-2); }
 .sv-btn-ghost { background: transparent; border-color: var(--line); color: var(--text-dark); }
 .sv-btn-ghost:hover { background: var(--paper-2); }
-<<<<<<< HEAD
 .sv-btn-small { padding: 5px 9px; font-size: 11.5px; }
 
 .sv-app input[type="text"], .sv-app input[type="number"], .sv-app input[type="email"] {
-=======
-
-.sv-app input[type="text"], .sv-app input[type="number"], .sv-app input[type="password"] {
->>>>>>> 6e2a3a52b00bf86ec885ba360374648add38dfb7
   font-family: var(--font-body); font-size: 13.5px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 7px; width: 100%; background:#fff; color: var(--text-dark);
 }
 .sv-app input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 2px rgba(199,154,43,0.15); }
@@ -1075,7 +829,6 @@ const CSS = `
 .sv-modal { background: var(--paper); border-radius: 12px; padding: 20px; width: 320px; max-width: 100%; border: 1px solid var(--line); }
 .sv-modal h3 { font-family: var(--font-display); font-size: 16px; margin: 0 0 12px; display:flex; align-items:center; gap: 7px; }
 .sv-modal-actions { display:flex; justify-content:flex-end; gap: 8px; margin-top: 14px; }
-<<<<<<< HEAD
 .sv-form-error { color: var(--rust); font-size: 12px; margin: -4px 0 10px; }
 .sv-form-ok { color: var(--positive); font-size: 12px; margin-top: 6px; }
 `;
@@ -1101,7 +854,7 @@ function downloadCsv(totals, year) {
   lines.push(["Member", ...MONTHS, "Total contributed", "Short months", "Penalty deducted", "Net contribution", "Share of pool %", "Interest share", "Penalty share", "Total payout"]);
   totals.rows.forEach((r) => lines.push([
     r.name,
-    ...MONTHS.map((m) => (r.monthly[m] === null ? (r.missed[m] ? "Missed" : "") : r2(r.monthly[m]))),
+    ...MONTHS.map((m) => (r.monthly[m] === null ? "" : r2(r.monthly[m]))),
     r2(r.rawContribution), r.shortfallMonths, r2(r.penaltyTotal), r2(r.netContribution),
     (r.pct * 100).toFixed(2), r2(r.interestShare), r2(r.penaltyShare), r2(r.totalShare),
   ]));
@@ -1207,8 +960,3 @@ function Reports({ totals, year }) {
     </div>
   );
 }
-=======
-.sv-form-error { color: var(--rust); font-size: 12px; margin-top: 6px; }
-.sv-form-ok { color: var(--positive); font-size: 12px; margin-top: 6px; }
-`;
->>>>>>> 6e2a3a52b00bf86ec885ba360374648add38dfb7
